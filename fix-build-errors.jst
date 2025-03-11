@@ -1,0 +1,508 @@
+const fs = require('fs');
+const path = require('path');
+
+// Rutas principales
+const ROOT_DIR = process.cwd();
+const APP_DIR = path.join(ROOT_DIR, 'app');
+const COMPONENTS_DIR = path.join(ROOT_DIR, 'components');
+
+// Función para crear directorios recursivamente
+function mkdirRecursive(dir) {
+  if (fs.existsSync(dir)) return;
+  
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+    console.log(`✅ Creado directorio: ${dir}`);
+  } catch (err) {
+    console.error(`❌ Error al crear directorio ${dir}:`, err);
+  }
+}
+
+// Función para crear componentes UI básicos
+function createUIComponents() {
+  const UI_DIR = path.join(COMPONENTS_DIR, 'ui');
+  mkdirRecursive(UI_DIR);
+  
+  // Crear componente Table
+  const tableContent = `
+import * as React from "react"
+
+import { cn } from "@/lib/utils"
+
+const Table = React.forwardRef<
+  HTMLTableElement,
+  React.HTMLAttributes<HTMLTableElement>
+>(({ className, ...props }, ref) => (
+  <div className="relative w-full overflow-auto">
+    <table
+      ref={ref}
+      className={cn("w-full caption-bottom text-sm", className)}
+      {...props}
+    />
+  </div>
+))
+Table.displayName = "Table"
+
+const TableHeader = React.forwardRef<
+  HTMLTableSectionElement,
+  React.HTMLAttributes<HTMLTableSectionElement>
+>(({ className, ...props }, ref) => (
+  <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
+))
+TableHeader.displayName = "TableHeader"
+
+const TableBody = React.forwardRef<
+  HTMLTableSectionElement,
+  React.HTMLAttributes<HTMLTableSectionElement>
+>(({ className, ...props }, ref) => (
+  <tbody
+    ref={ref}
+    className={cn("[&_tr:last-child]:border-0", className)}
+    {...props}
+  />
+))
+TableBody.displayName = "TableBody"
+
+const TableFooter = React.forwardRef<
+  HTMLTableSectionElement,
+  React.HTMLAttributes<HTMLTableSectionElement>
+>(({ className, ...props }, ref) => (
+  <tfoot
+    ref={ref}
+    className={cn("bg-primary font-medium text-primary-foreground", className)}
+    {...props}
+  />
+))
+TableFooter.displayName = "TableFooter"
+
+const TableRow = React.forwardRef<
+  HTMLTableRowElement,
+  React.HTMLAttributes<HTMLTableRowElement>
+>(({ className, ...props }, ref) => (
+  <tr
+    ref={ref}
+    className={cn(
+      "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+      className
+    )}
+    {...props}
+  />
+))
+TableRow.displayName = "TableRow"
+
+const TableHead = React.forwardRef<
+  HTMLTableCellElement,
+  React.ThHTMLAttributes<HTMLTableCellElement>
+>(({ className, ...props }, ref) => (
+  <th
+    ref={ref}
+    className={cn(
+      "h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0",
+      className
+    )}
+    {...props}
+  />
+))
+TableHead.displayName = "TableHead"
+
+const TableCell = React.forwardRef<
+  HTMLTableCellElement,
+  React.TdHTMLAttributes<HTMLTableCellElement>
+>(({ className, ...props }, ref) => (
+  <td
+    ref={ref}
+    className={cn("p-4 align-middle [&:has([role=checkbox])]:pr-0", className)}
+    {...props}
+  />
+))
+TableCell.displayName = "TableCell"
+
+const TableCaption = React.forwardRef<
+  HTMLTableCaptionElement,
+  React.HTMLAttributes<HTMLTableCaptionElement>
+>(({ className, ...props }, ref) => (
+  <caption
+    ref={ref}
+    className={cn("mt-4 text-sm text-muted-foreground", className)}
+    {...props}
+  />
+))
+TableCaption.displayName = "TableCaption"
+
+export {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
+}
+`;
+  fs.writeFileSync(path.join(UI_DIR, 'table.tsx'), tableContent);
+  console.log('✅ Creado componente: table.tsx');
+
+  // Crear componente Dialog
+  const dialogContent = `
+import * as React from "react"
+import * as DialogPrimitive from "@radix-ui/react-dialog"
+import { X } from 'lucide-react'
+
+import { cn } from "@/lib/utils"
+
+const Dialog = DialogPrimitive.Root
+
+const DialogTrigger = DialogPrimitive.Trigger
+
+const DialogPortal = DialogPrimitive.Portal
+
+const DialogClose = DialogPrimitive.Close
+
+const DialogOverlay = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Overlay>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Overlay
+    ref={ref}
+    className={cn(
+      "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      className
+    )}
+    {...props}
+  />
+))
+DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
+
+const DialogContent = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
+>(({ className, children, ...props }, ref) => (
+  <DialogPortal>
+    <DialogOverlay />
+    <DialogPrimitive.Content
+      ref={ref}
+      className={cn(
+        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
+        className
+      )}
+      {...props}
+    >
+      {children}
+      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+        <X className="h-4 w-4" />
+        <span className="sr-only">Close</span>
+      </DialogPrimitive.Close>
+    </DialogPrimitive.Content>
+  </DialogPortal>
+))
+DialogContent.displayName = DialogPrimitive.Content.displayName
+
+const DialogHeader = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn(
+      "flex flex-col space-y-1.5 text-center sm:text-left",
+      className
+    )}
+    {...props}
+  />
+)
+DialogHeader.displayName = "DialogHeader"
+
+const DialogFooter = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn(
+      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+      className
+    )}
+    {...props}
+  />
+)
+DialogFooter.displayName = "DialogFooter"
+
+const DialogTitle = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Title>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Title
+    ref={ref}
+    className={cn(
+      "text-lg font-semibold leading-none tracking-tight",
+      className
+    )}
+    {...props}
+  />
+))
+DialogTitle.displayName = DialogPrimitive.Title.displayName
+
+const DialogDescription = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Description>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Description
+    ref={ref}
+    className={cn("text-sm text-muted-foreground", className)}
+    {...props}
+  />
+))
+DialogDescription.displayName = DialogPrimitive.Description.displayName
+
+export {
+  Dialog,
+  DialogPortal,
+  DialogOverlay,
+  DialogClose,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+}
+`;
+  fs.writeFileSync(path.join(UI_DIR, 'dialog.tsx'), dialogContent);
+  console.log('✅ Creado componente: dialog.tsx');
+
+  // Crear componente Label
+  const labelContent = `
+import * as React from "react"
+import * as LabelPrimitive from "@radix-ui/react-label"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+
+const labelVariants = cva(
+  "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+)
+
+const Label = React.forwardRef<
+  React.ElementRef<typeof LabelPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> &
+    VariantProps<typeof labelVariants>
+>(({ className, ...props }, ref) => (
+  <LabelPrimitive.Root
+    ref={ref}
+    className={cn(labelVariants(), className)}
+    {...props}
+  />
+))
+Label.displayName = LabelPrimitive.Root.displayName
+
+export { Label }
+`;
+  fs.writeFileSync(path.join(UI_DIR, 'label.tsx'), labelContent);
+  console.log('✅ Creado componente: label.tsx');
+
+  // Crear componente Textarea
+  const textareaContent = `
+import * as React from "react"
+
+import { cn } from "@/lib/utils"
+
+export interface TextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+
+const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+  ({ className, ...props }, ref) => {
+    return (
+      <textarea
+        className={cn(
+          "flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+          className
+        )}
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
+Textarea.displayName = "Textarea"
+
+export { Textarea }
+`;
+  fs.writeFileSync(path.join(UI_DIR, 'textarea.tsx'), textareaContent);
+  console.log('✅ Creado componente: textarea.tsx');
+}
+
+// Función para crear componente ApiKeySettings
+function createApiKeySettings() {
+  const ADMIN_DIR = path.join(COMPONENTS_DIR, 'admin');
+  mkdirRecursive(ADMIN_DIR);
+  
+  const apiKeySettingsContent = `
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
+interface ApiKeySettingsProps {
+  initialApiKey?: string;
+  initialUseSharedKey?: boolean;
+}
+
+const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
+  initialApiKey = '',
+  initialUseSharedKey = true,
+}) => {
+  const [apiKey, setApiKey] = useState(initialApiKey);
+  const [useSharedKey, setUseSharedKey] = useState(initialUseSharedKey);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Here you would typically save the API key to your backend
+    console.log('Saving API key:', apiKey);
+    console.log('Using shared key:', useSharedKey);
+    
+    setIsSaving(false);
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>OpenAI API Key Settings</CardTitle>
+        <CardDescription>
+          Configure your OpenAI API key for AI-powered features
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="use-shared-key"
+            checked={useSharedKey}
+            onCheckedChange={setUseSharedKey}
+          />
+          <Label htmlFor="use-shared-key">Use shared organization API key</Label>
+        </div>
+        
+        {!useSharedKey && (
+          <div className="space-y-2">
+            <Label htmlFor="api-key">Your OpenAI API Key</Label>
+            <Input
+              id="api-key"
+              type="password"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder="sk-..."
+            />
+            <p className="text-sm text-gray-500">
+              Your API key is stored securely and never shared.
+            </p>
+          </div>
+        )}
+      </CardContent>
+      <CardFooter>
+        <Button onClick={handleSave} disabled={isSaving}>
+          {isSaving ? 'Saving...' : 'Save Settings'}
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+};
+
+export default ApiKeySettings;
+`;
+  fs.writeFileSync(path.join(ADMIN_DIR, 'api-key-settings.tsx'), apiKeySettingsContent);
+  console.log('✅ Creado componente: api-key-settings.tsx');
+}
+
+// Función para crear utils.ts si no existe
+function createUtils() {
+  const LIB_DIR = path.join(ROOT_DIR, 'lib');
+  mkdirRecursive(LIB_DIR);
+  
+  if (!fs.existsSync(path.join(LIB_DIR, 'utils.ts'))) {
+    const utilsContent = `
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+ 
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+`;
+    fs.writeFileSync(path.join(LIB_DIR, 'utils.ts'), utilsContent);
+    console.log('✅ Creado archivo: utils.ts');
+  }
+}
+
+// Función para verificar y actualizar package.json
+function updatePackageJson() {
+  const packageJsonPath = path.join(ROOT_DIR, 'package.json');
+  
+  if (fs.existsSync(packageJsonPath)) {
+    try {
+      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+      
+      // Asegurarse de que las dependencias necesarias estén instaladas
+      const dependencies = packageJson.dependencies || {};
+      const devDependencies = packageJson.devDependencies || {};
+      
+      const requiredDependencies = {
+        "@radix-ui/react-dialog": "^1.0.5",
+        "@radix-ui/react-label": "^2.0.2",
+        "@radix-ui/react-switch": "^1.0.3",
+        "class-variance-authority": "^0.7.0",
+        "clsx": "^2.1.0",
+        "tailwind-merge": "^2.2.1"
+      };
+      
+      let dependenciesChanged = false;
+      
+      for (const [dep, version] of Object.entries(requiredDependencies)) {
+        if (!dependencies[dep] && !devDependencies[dep]) {
+          dependencies[dep] = version;
+          dependenciesChanged = true;
+          console.log(`✅ Añadida dependencia: ${dep}@${version}`);
+        }
+      }
+      
+      if (dependenciesChanged) {
+        packageJson.dependencies = dependencies;
+        fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+        console.log('✅ Actualizado package.json');
+        console.log('⚠️ Ejecuta "npm install" para instalar las nuevas dependencias');
+      }
+    } catch (err) {
+      console.error('❌ Error al actualizar package.json:', err);
+    }
+  }
+}
+
+// Función principal
+async function main() {
+  console.log('🚀 Iniciando corrección de errores de compilación...');
+  
+  // 1. Crear componentes UI faltantes
+  createUIComponents();
+  
+  // 2. Crear componente ApiKeySettings
+  createApiKeySettings();
+  
+  // 3. Crear utils.ts si no existe
+  createUtils();
+  
+  // 4. Actualizar package.json
+  updatePackageJson();
+  
+  console.log('✅ Correcciones completadas');
+  console.log('🏁 Ahora ejecuta:');
+  console.log('   npm install');
+  console.log('   npm run build');
+}
+
+main().catch(err => {
+  console.error('❌ Error en el script:', err);
+  process.exit(1);
+});

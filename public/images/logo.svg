@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50" viewBox="0 0 200 50">
+  <style>
+    .text { font: bold 24px sans-serif; fill: #1a56db; }
+    .subtext { font: 12px sans-serif; fill: #4b5563; }
+  </style>
+  <rect width="200" height="50" fill="none"/>
+  <text x="10" y="30" class="text">NOLIVOS LAW</text>
+  <text x="10" y="45" class="subtext">SERVICIOS LEGALES</text>
+</svg>
