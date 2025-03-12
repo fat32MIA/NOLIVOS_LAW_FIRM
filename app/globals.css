@@ -3,60 +3,19 @@
 @tailwind utilities;
 
 :root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+[data-theme='dark'] {
   --foreground-rgb: 255, 255, 255;
-  --background-rgb: 0, 0, 0;
+  --background-start-rgb: 17, 24, 39;
+  --background-end-rgb: 31, 41, 55;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
-}
-
-/* Estilos para bordes y cajas */
-.border {
-  border-width: 1px;
-  border-style: solid;
-}
-
-.border-neutral-700 {
-  border-color: #404040;
-}
-
-.border-neutral-800 {
-  border-color: #262626;
-}
-
-.rounded-lg {
-  border-radius: 0.5rem;
-}
-
-.bg-neutral-800 {
-  background-color: #262626;
-}
-
-.bg-neutral-800\/50 {
-  background-color: rgba(38, 38, 38, 0.5);
-}
-
-.hover\:bg-neutral-700:hover {
-  background-color: #404040;
-}
-
-/* Estilos para inputs y botones */
-input, textarea {
-  background-color: rgba(38, 38, 38, 0.5);
-  border: 1px solid rgba(64, 64, 64, 0.5);
-}
-
-input:focus, textarea:focus {
-  outline: none;
-  border-color: rgba(82, 82, 82, 0.8);
-}
-
-button {
-  transition: all 0.2s ease;
-}
-
-button:hover {
-  transform: translateY(-1px);
+  background: rgb(var(--background-start-rgb));
+  min-height: 100vh;
 }
