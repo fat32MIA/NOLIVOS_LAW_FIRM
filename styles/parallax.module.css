@@ -1,0 +1,103 @@
+/* styles/parallax.module.css */
+.parallaxContainer {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background-color: #0d2247;
+}
+
+.heroContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.backgroundImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+  z-index: 1;
+}
+
+.title {
+  position: absolute;
+  z-index: 2;
+  font-size: 16vw;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.2);
+  text-align: center;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  opacity: 0.8;
+}
+
+.abogadoContainer {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.abogadoImage {
+  height: auto;
+  max-height: 90vh;
+  max-width: 90%;
+  object-fit: contain;
+  object-position: center center;
+}
+
+.contentSection {
+  padding: 4rem 2rem;
+  background-color: white;
+  position: relative;
+  z-index: 10;
+}
+
+.contentContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.heroOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30%;
+  background: linear-gradient(to top, rgba(13, 34, 71, 1) 0%, rgba(13, 34, 71, 0) 100%);
+  z-index: 4;
+}
+
+/* Animación para el título */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 0.8;
+    transform: translateY(0);
+  }
+}
+
+.title {
+  animation: fadeIn 1.5s ease-out forwards;
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+  .title {
+    font-size: 20vw;
+  }
+}

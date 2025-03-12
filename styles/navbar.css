@@ -1,0 +1,82 @@
+/* styles/navbar.css */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+.nav-item {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.nav-link {
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  display: block;
+  padding: 16px 20px;
+  transition: color 0.3s ease;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: white;
+}
+
+.nav-item.active .nav-link {
+  color: #0d2247;
+}
+
+.hori-selector {
+  display: inline-block;
+  position: absolute;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  transition-duration: 0.6s;
+  transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  background-color: #fff;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  z-index: -1;
+}
+
+.hori-selector .right,
+.hori-selector .left {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #fff;
+  bottom: 0;
+}
+
+.hori-selector .right {
+  right: -10px;
+}
+
+.hori-selector .left {
+  left: -10px;
+}
+
+.hori-selector .right:before,
+.hori-selector .left:before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #0d2247;
+}
+
+.hori-selector .right:before {
+  bottom: 0;
+  right: -10px;
+}
+
+.hori-selector .left:before {
+  bottom: 0;
+  left: -10px;
+}
+
+/* Estilos para móvil */
+@media (max-width: 768px) {
+  .hori-selector {
+    display: none;
+  }
+}

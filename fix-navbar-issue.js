@@ -1,27 +1,131 @@
-// components/navbar.tsx
+// fix-navbar-issue.js
+const fs = require('fs');
+const path = require('path');
+
+console.log('🔧 Corrigiendo problema del navbar...');
+
+// Crear directorio de estilos si no existe
+const stylesDir = path.join(process.cwd(), 'styles');
+if (!fs.existsSync(stylesDir)) {
+  fs.mkdirSync(stylesDir, { recursive: true });
+  console.log('📁 Creado directorio styles/');
+}
+
+// Contenido para el archivo de estilos CSS
+const navbarCssContent = `/* styles/navbar.css */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+.nav-item {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.nav-link {
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  display: block;
+  padding: 16px 20px;
+  transition: color 0.3s ease;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: white;
+}
+
+.nav-item.active .nav-link {
+  color: #0d2247;
+}
+
+.hori-selector {
+  display: inline-block;
+  position: absolute;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  transition-duration: 0.6s;
+  transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  background-color: #fff;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  z-index: -1;
+}
+
+.hori-selector .right,
+.hori-selector .left {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #fff;
+  bottom: 0;
+}
+
+.hori-selector .right {
+  right: -10px;
+}
+
+.hori-selector .left {
+  left: -10px;
+}
+
+.hori-selector .right:before,
+.hori-selector .left:before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #0d2247;
+}
+
+.hori-selector .right:before {
+  bottom: 0;
+  right: -10px;
+}
+
+.hori-selector .left:before {
+  bottom: 0;
+  left: -10px;
+}
+
+/* Estilos para móvil */
+@media (max-width: 768px) {
+  .hori-selector {
+    display: none;
+  }
+}`;
+
+// Guardar el archivo CSS
+fs.writeFileSync(path.join(stylesDir, 'navbar.css'), navbarCssContent);
+console.log('✅ Creado archivo styles/navbar.css');
+
+// Actualizar el archivo global.css para importar el CSS del navbar
+const globalCssPath = path.join(process.cwd(), 'app', 'globals.css');
+if (fs.existsSync(globalCssPath)) {
+  let globalCssContent = fs.readFileSync(globalCssPath, 'utf8');
+  
+  // Verificar si ya existe la importación
+  if (!globalCssContent.includes('@import "../styles/navbar.css"')) {
+    globalCssContent = `@import "../styles/navbar.css";\n\n${globalCssContent}`;
+    fs.writeFileSync(globalCssPath, globalCssContent);
+    console.log('✅ Actualizado app/globals.css para importar los estilos del navbar');
+  } else {
+    console.log('ℹ️ La importación de estilos del navbar ya existe en globals.css');
+  }
+} else {
+  console.log('⚠️ No se encontró el archivo app/globals.css');
+}
+
+// Contenido correcto para el componente navbar.tsx
+const navbarTsxContent = `// components/navbar.tsx
 "use client";
 
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
-import { Menu, X, Sun, Moon, User, Home, FileText, Calendar, BarChart2, Users, Briefcase, Settings, HelpCircle, CheckSquare } from 'lucide-react';
+import { Menu, X, Sun, Moon, User, Home, FileText, Calendar, BarChart2, Users } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { NavLink, getNavLinks, getMockUser } from '@/lib/user-client';
-
-// Mapa de íconos por nombre
-const iconMap: Record<string, React.ReactNode> = {
-  Home: <Home className="w-5 h-5" />,
-  BarChart2: <BarChart2 className="w-5 h-5" />,
-  FileText: <FileText className="w-5 h-5" />,
-  Calendar: <Calendar className="w-5 h-5" />,
-  Users: <Users className="w-5 h-5" />,
-  User: <User className="w-5 h-5" />,
-  Briefcase: <Briefcase className="w-5 h-5" />,
-  Settings: <Settings className="w-5 h-5" />,
-  HelpCircle: <HelpCircle className="w-5 h-5" />,
-  CheckSquare: <CheckSquare className="w-5 h-5" />
-};
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -37,40 +141,6 @@ export default function Navbar() {
     width: '0px',
     opacity: 0
   });
-  const [navLinks, setNavLinks] = useState<NavLink[]>([]);
-  const [userName, setUserName] = useState<string>('');
-
-  useEffect(() => {
-    // Función para obtener datos de usuario
-    async function fetchUserData() {
-      try {
-        // Obtener usuario de la API
-        const userResponse = await fetch('/api/user');
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          setUserName(userData.name);
-          
-          // Obtener enlaces de navegación basados en el rol
-          const links = getNavLinks(userData.role);
-          setNavLinks(links);
-        } else {
-          // Fallback: usar datos mock
-          const mockUser = getMockUser();
-          setUserName(mockUser.name);
-          setNavLinks(getNavLinks(mockUser.role));
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        // Fallback: usar datos mock
-        const mockUser = getMockUser();
-        setUserName(mockUser.name);
-        setNavLinks(getNavLinks(mockUser.role));
-      }
-    }
-
-    fetchUserData();
-    setMounted(true);
-  }, []);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -79,6 +149,15 @@ export default function Navbar() {
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
+
+  // Navigation links
+  const navLinks = [
+    { href: "/", label: "Inicio", icon: <Home className="w-5 h-5" /> },
+    { href: "/dashboard", label: "Dashboard", icon: <BarChart2 className="w-5 h-5" /> },
+    { href: "/immigration-assistant", label: "Asistente", icon: <FileText className="w-5 h-5" /> },
+    { href: "/document-scanner", label: "Documentos", icon: <FileText className="w-5 h-5" /> },
+    { href: "/login", label: "Iniciar Sesión", icon: <User className="w-5 h-5" /> }
+  ];
 
   // Update selector position when active item changes
   const updateSelector = () => {
@@ -90,10 +169,10 @@ export default function Navbar() {
     
     if (navRect) {
       setSelectorStyle({
-        top: `${activeItem.offsetTop}px`,
-        left: `${activeItem.offsetLeft}px`,
-        height: `${rect.height}px`,
-        width: `${rect.width}px`,
+        top: \`\${activeItem.offsetTop}px\`,
+        left: \`\${activeItem.offsetLeft}px\`,
+        height: \`\${rect.height}px\`,
+        width: \`\${rect.width}px\`,
         opacity: 1
       });
     }
@@ -101,12 +180,16 @@ export default function Navbar() {
 
   // Set up effects
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     if (mounted) {
       updateSelector();
       window.addEventListener('resize', updateSelector);
       return () => window.removeEventListener('resize', updateSelector);
     }
-  }, [mounted, pathName, navLinks]);
+  }, [mounted, pathName]);
 
   return (
     <nav className="bg-[#0d2247] text-white shadow-md w-full z-10" ref={navbarRef}>
@@ -120,11 +203,7 @@ export default function Navbar() {
                 width={150} 
                 height={40} 
                 className="h-8 w-auto"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.onerror = null;
-                  target.src = '/images/logo-backup.svg';
-                }}
+                onError={() => console.log("Error loading image")}
               />
             </Link>
           </div>
@@ -158,14 +237,14 @@ export default function Navbar() {
                   <li 
                     key={link.href}
                     ref={isActive ? activeTabRef : null}
-                    className={`relative ${isActive ? 'text-[#0d2247]' : 'text-white/80 hover:text-white'}`}
+                    className={\`relative \${isActive ? 'text-[#0d2247]' : 'text-white/80 hover:text-white'}\`}
                   >
                     <Link 
                       href={link.href} 
                       className="flex items-center px-4 py-4 transition-colors duration-300"
                       onClick={updateSelector}
                     >
-                      <span className="mr-2">{iconMap[link.icon] || <FileText className="w-5 h-5" />}</span>
+                      <span className="mr-2">{link.icon}</span>
                       {link.label}
                     </Link>
                   </li>
@@ -177,7 +256,6 @@ export default function Navbar() {
                 <button
                   onClick={toggleTheme}
                   className="p-2 rounded-md text-white/80 hover:text-white focus:outline-none"
-                  aria-label="Cambiar tema"
                 >
                   {theme === 'dark' ? (
                     <Sun className="h-5 w-5" />
@@ -186,19 +264,6 @@ export default function Navbar() {
                   )}
                 </button>
               </li>
-              
-              {/* User profile */}
-              {userName && (
-                <li className="ml-2">
-                  <Link 
-                    href="/profile" 
-                    className="flex items-center px-3 py-2 text-white/80 hover:text-white"
-                  >
-                    <User className="w-5 h-5 mr-2" />
-                    <span className="hidden lg:inline">{userName}</span>
-                  </Link>
-                </li>
-              )}
             </ul>
           </div>
 
@@ -207,7 +272,6 @@ export default function Navbar() {
             <button
               onClick={toggleTheme}
               className="p-2 mr-2 rounded-md text-white/80 hover:text-white focus:outline-none"
-              aria-label="Cambiar tema"
             >
               {theme === 'dark' ? (
                 <Sun className="h-5 w-5" />
@@ -218,7 +282,6 @@ export default function Navbar() {
             <button
               onClick={toggleMenu}
               className="p-2 rounded-md text-white/80 hover:text-white focus:outline-none"
-              aria-label="Abrir menú"
             >
               {isOpen ? (
                 <X className="h-6 w-6" />
@@ -238,39 +301,64 @@ export default function Navbar() {
               <li key={link.href}>
                 <Link 
                   href={link.href} 
-                  className={`block px-3 py-2 rounded-md text-base font-medium ${
+                  className={\`block px-3 py-2 rounded-md text-base font-medium \${
                     pathName === link.href 
                       ? 'bg-white text-[#0d2247]' 
                       : 'text-white/80 hover:text-white hover:bg-[#0d2247]/80'
-                  }`}
+                  }\`}
                   onClick={toggleMenu}
                 >
                   <div className="flex items-center">
-                    <span className="mr-2">{iconMap[link.icon] || <FileText className="w-5 h-5" />}</span>
+                    <span className="mr-2">{link.icon}</span>
                     {link.label}
                   </div>
                 </Link>
               </li>
             ))}
-            
-            {/* User profile for mobile */}
-            {userName && (
-              <li>
-                <Link 
-                  href="/profile" 
-                  className="block px-3 py-2 rounded-md text-base font-medium text-white/80 hover:text-white hover:bg-[#0d2247]/80"
-                  onClick={toggleMenu}
-                >
-                  <div className="flex items-center">
-                    <User className="w-5 h-5 mr-2" />
-                    {userName}
-                  </div>
-                </Link>
-              </li>
-            )}
           </ul>
         </div>
       )}
     </nav>
   );
+}`;
+
+// Guardar el archivo navbar.tsx corregido
+const navbarComponentPath = path.join(process.cwd(), 'components', 'navbar.tsx');
+fs.writeFileSync(navbarComponentPath, navbarTsxContent);
+console.log('✅ Corregido components/navbar.tsx');
+
+// Asegurarse de que la carpeta components existe
+const componentsDir = path.join(process.cwd(), 'components');
+if (!fs.existsSync(componentsDir)) {
+  fs.mkdirSync(componentsDir, { recursive: true });
+  console.log('📁 Creado directorio components/');
 }
+
+// Asegurarse de que existe el proveedor de tema
+const themeProviderDir = path.join(componentsDir, 'theme');
+if (!fs.existsSync(themeProviderDir)) {
+  fs.mkdirSync(themeProviderDir, { recursive: true });
+  console.log('📁 Creado directorio components/theme/');
+  
+  // Contenido del proveedor de tema
+  const themeProviderContent = `// components/theme/theme-provider.tsx
+"use client";
+
+import * as React from "react";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { type ThemeProviderProps } from "next-themes/dist/types";
+
+export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
+}`;
+  
+  fs.writeFileSync(path.join(themeProviderDir, 'theme-provider.tsx'), themeProviderContent);
+  console.log('✅ Creado components/theme/theme-provider.tsx');
+}
+
+console.log('\n✨ ¡Correcciones completadas!');
+console.log('\nPróximos pasos:');
+console.log('1. Asegúrate de tener instaladas las dependencias necesarias con:');
+console.log('   npm install next-themes lucide-react');
+console.log('2. Intenta compilar de nuevo:');
+console.log('   npm run build');

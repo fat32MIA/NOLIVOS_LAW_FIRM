@@ -1,7 +1,12 @@
+import Hero from '@/components/Hero';
+import ParallaxHero from '@/components/ParallaxHero';
 import Link from 'next/link';
 
 export default function Home() {
   return (
+      <>
+        <Hero />
+        
     <div>
       <section className="py-16 bg-gradient-to-r from-blue-900 to-slate-900 text-white">
         <div className="max-w-7xl mx-auto px-4 text-center">
@@ -69,5 +74,6 @@ export default function Home() {
         </div>
       </section>
     </div>
-  );
+      </>
+    );
 }
